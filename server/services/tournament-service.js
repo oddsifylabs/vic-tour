@@ -449,7 +449,7 @@ class TournamentService {
     return this.db.prepare(query).get(sport.toLowerCase());
   }
 
-  // Get all current seasons
+  // Get all current seasons with real-time status
   getAllCurrentSeasons() {
     const query = `
       SELECT ts.*, t.name as tournament_name, t.sport, t.type, t.region
@@ -459,7 +459,49 @@ class TournamentService {
       ORDER BY t.sport, ts.year DESC
     `;
 
-    return this.db.prepare(query).all();
+    const seasons = this.db.prepare(query).all();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Calculate real-time status for each season
+    return seasons.map(season => {
+      const startDate = new Date(season.start_date);
+      const endDate = new Date(season.end_date);
+
+      // Determine actual status based on current date
+      let status = 'scheduled';
+      let is_offseason = false;
+      
+      if (today >= startDate && today <= endDate) {
+        status = 'in_progress';
+      } else if (today > endDate) {
+        status = 'completed';
+      } else if (today < startDate) {
+        // Check if this is an offseason period (between seasons)
+        const yearAgo = new Date(today);
+        yearAgo.setFullYear(yearAgo.getFullYear() - 1);
+        if (startDate <= yearAgo) {
+          is_offseason = true;
+        }
+      }
+
+      // Calculate progress percentage
+      let progress = 0;
+      if (status === 'in_progress') {
+        const total = endDate - startDate;
+        const elapsed = today - startDate;
+        progress = Math.min(100, Math.max(0, Math.round((elapsed / total) * 100)));
+      } else if (status === 'completed') {
+        progress = 100;
+      }
+
+      return {
+        ...season,
+        actual_status: status,
+        progress_percent: progress,
+        is_offseason
+      };
+    });
   }
 
   // Get tournaments by sport
