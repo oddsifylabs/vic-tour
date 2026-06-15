@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIC Tour — Championship Tracker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #111625;
+      --bg-card: rgba(17, 22, 37, 0.8);
+      --bg-glass: rgba(59, 130, 246, 0.1);
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-cyan: #06b6d4;
+      --gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%);
+      --text-primary: #e0e0e0;
+      --text-secondary: #9ca3af;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Particle Background */
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem;
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-card h3 {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Championships Grid */
+    .championships-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .champ-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .champ-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+    }
+
+    .champ-header {
+      padding: 1.5rem;
+      background: var(--bg-glass);
+      border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .champ-header h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .champ-header .sport-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--gradient);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .champ-body {
+      padding: 1.5rem;
+    }
+
+    .champ-info {
+      margin-bottom: 1.5rem;
+    }
+
+    .champ-info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .champ-info-row:last-child {
+      border-bottom: none;
+    }
+
+    .champ-info-label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .champ-info-value {
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-scheduled {
+      background: rgba(139, 92, 246, 0.2);
+      color: #a78bfa;
+    }
+
+    .status-in_progress {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+
+    .status-completed {
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer a {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: 4rem;
+      color: var(--text-secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .header h1 {
+        font-size: 1.75rem;
+      }
+
+      .championships-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles"></canvas>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🏆 VIC Tour Championship Tracker</h1>
+      <p>Final Tournaments & Championship Events — Oddsify Labs</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Championships</h3>
+        <div class="value" id="total-champs">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Upcoming</h3>
+        <div class="value" id="upcoming-champs">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>In Progress</h3>
+        <div class="value" id="active-champs">-</div>
+      </div>
+      <div class="stat-card">
+        <h3>Sports</h3>
+        <div class="value" id="total-sports">9</div>
+      </div>
+    </div>
+
+    <!-- Championships -->
+    <h2 style="margin-bottom: 1.5rem; font-size: 1.5rem;">🏅 Championship Events</h2>
+    <div id="championships" class="championships-grid">
+      <div class="loading">Loading championships...</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>Built by <a href="https://oddsifylabs.com" target="_blank">Oddsify Labs</a></p>
+      <p style="margin-top: 0.5rem; font-size: 0.875rem;">VIC Tour — Vegas Intelligence Console</p>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const VIC_TOUR_API = window.location.origin;
+
+    // State
+    let championshipsData = [];
+
+    // Particle Background
+    function initParticles() {
+      const canvas = document.getElementById('particles');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const particleCount = 50;
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
+          size: Math.random() * 2 + 1,
+          opacity: Math.random() * 0.5 + 0.2
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+          if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(59, 130, 246, ${p.opacity})`;
+          ctx.fill();
+        });
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    }
+
+    // Load Championships
+    async function loadChampionships() {
+      try {
+        const response = await fetch(`${VIC_TOUR_API}/api/championships`);
+        const data = await response.json();
+        
+        if (data.success) {
+          championshipsData = data.data || [];
+          updateStats();
+          renderChampionships();
+        } else {
+          showError('Failed to load championships');
+        }
+      } catch (error) {
+        console.error('Error loading championships:', error);
+        showError('Unable to connect to API');
+      }
+    }
+
+    // Update Stats
+    function updateStats() {
+      const total = championshipsData.length;
+      const now = new Date();
+      const upcoming = championshipsData.filter(c => new Date(c.start_date) > now).length;
+      const inProgress = championshipsData.filter(c => {
+        const start = new Date(c.start_date);
+        const end = new Date(c.end_date);
+        return now >= start && now <= end;
+      }).length;
+
+      document.getElementById('total-champs').textContent = total;
+      document.getElementById('upcoming-champs').textContent = upcoming;
+      document.getElementById('active-champs').textContent = inProgress;
+    }
+
+    // Render Championships
+    function renderChampionships() {
+      const container = document.getElementById('championships');
+      
+      if (championshipsData.length === 0) {
+        container.innerHTML = '<div class="loading">No championships found</div>';
+        return;
+      }
+
+      const now = new Date();
+
+      container.innerHTML = championshipsData.map(champ => {
+        const startDate = new Date(champ.start_date);
+        const endDate = new Date(champ.end_date);
+        
+        let status = 'scheduled';
+        let statusText = 'Scheduled';
+        if (now >= startDate && now <= endDate) {
+          status = 'in_progress';
+          statusText = 'In Progress';
+        } else if (now > endDate) {
+          status = 'completed';
+          statusText = 'Completed';
+        }
+
+        const daysUntil = Math.ceil((startDate - now) / (1000 * 60 * 60 * 24));
+        const daysText = daysUntil > 0 ? `in ${daysUntil} days` : 
+                        daysUntil === 0 ? 'today' : 
+                        `was ${Math.abs(daysUntil)} days ago`;
+
+        return `
+          <div class="champ-card">
+            <div class="champ-header">
+              <h3>${champ.name}</h3>
+              <span class="sport-badge">${champ.sport.toUpperCase()}</span>
+            </div>
+            <div class="champ-body">
+              <div class="champ-info">
+                <div class="champ-info-row">
+                  <span class="champ-info-label">Status</span>
+                  <span class="status-badge status-${status}">${statusText}</span>
+                </div>
+                <div class="champ-info-row">
+                  <span class="champ-info-label">Dates</span>
+                  <span class="champ-info-value">${formatDate(startDate)} → ${formatDate(endDate)}</span>
+                </div>
+                <div class="champ-info-row">
+                  <span class="champ-info-label">Format</span>
+                  <span class="champ-info-value">${champ.format}</span>
+                </div>
+                <div class="champ-info-row">
+                  <span class="champ-info-label">Teams</span>
+                  <span class="champ-info-value">${champ.teams_count}</span>
+                </div>
+                <div class="champ-info-row">
+                  <span class="champ-info-label">Starts</span>
+                  <span class="champ-info-value">${daysText}</span>
+                </div>
+                ${champ.champion ? `
+                <div class="champ-info-row">
+                  <span class="champ-info-label">🏆 Champion</span>
+                  <span class="champ-info-value">${champ.champion}</span>
+                </div>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Format Date
+    function formatDate(date) {
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+    }
+
+    // Show Error
+    function showError(message) {
+      document.getElementById('championships').innerHTML = `
+        <div class="loading" style="color: var(--danger);">
+          ⚠️ ${message}
+        </div>
+      `;
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initParticles();
+      loadChampionships();
+      
+      // Refresh every 60 seconds
+      setInterval(loadChampionships, 60000);
+    });
+  </script>
+</body>
+</html>

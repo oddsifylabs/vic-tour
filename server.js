@@ -81,9 +81,14 @@ app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
-// Root redirect to dashboard
+// Serve Championship Dashboard
+app.get('/championships', (req, res) => {
+  res.sendFile(path.join(__dirname, 'championships.html'));
+});
+
+// Root redirect to championships
 app.get('/', (req, res) => {
-  res.redirect('/dashboard');
+  res.redirect('/championships');
 });
 
 // API Documentation endpoint
