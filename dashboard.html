@@ -682,11 +682,11 @@
   <script>
     // Configuration - Auto-detect environment
     const VIC_TOUR_API = window.location.origin; // Use current origin (works for localhost and Railway)
-    const ODDS_API_KEY='6f46bb...09da';
+    const ODDS_API_KEY='***';
     const ODDS_API_BASE = '/api/odds'; // Use our backend proxy to avoid CORS
     
-    // Use mock data as fallback (API key needs refresh)
-    const USE_MOCK_DATA = true;
+    // Use live odds data via backend proxy
+    const USE_MOCK_DATA = false;
 
     // State
     let currentSport = 'all';
