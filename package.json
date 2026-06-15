@@ -8,7 +8,8 @@
     "dev": "node --watch server.js",
     "test": "jest --coverage",
     "init-data": "node scripts/init-tournaments.js",
-    "init-championships": "node scripts/init-championships.js"
+    "init-championships": "node scripts/init-championships.js",
+    "postinstall": "npm run init-data && npm run init-championships"
   },
   "engines": {
     "node": ">=20.0.0"
