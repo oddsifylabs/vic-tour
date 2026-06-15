@@ -129,6 +129,7 @@
       border: 1px solid rgba(59, 130, 246, 0.2);
       overflow: hidden;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
     }
 
     .champ-card:hover {
@@ -405,7 +406,7 @@
                         `was ${Math.abs(daysUntil)} days ago`;
 
         return `
-          <div class="champ-card">
+          <div class="champ-card" onclick="window.location.href='/event?id=${champ.id}'">
             <div class="champ-header">
               <h3>${champ.name}</h3>
               <span class="sport-badge">${champ.sport.toUpperCase()}</span>
