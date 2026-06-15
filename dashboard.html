@@ -680,13 +680,13 @@
   </div>
 
   <script>
-    // Configuration
-    const VIC_TOUR_API = 'http://localhost:3748';
-    const ODDS_API_KEY = '6f46bbb3b2fb69b5e14980a57e9909da';
-    const ODDS_API_BASE = 'https://the-odds-api.com/api/v4';
+    // Configuration - Auto-detect environment
+    const VIC_TOUR_API = window.location.origin; // Use current origin (works for localhost and Railway)
+    const ODDS_API_KEY='6f46bb...09da';
+    const ODDS_API_BASE = '/api/odds'; // Use our backend proxy to avoid CORS
     
-    // Use real API data
-    const USE_MOCK_DATA = false;
+    // Use mock data as fallback (API key needs refresh)
+    const USE_MOCK_DATA = true;
 
     // State
     let currentSport = 'all';
@@ -782,28 +782,25 @@
       tournamentsData = data.data || [];
     }
 
-    // Load Odds from The Odds API
+    // Load Odds - Use backend proxy to avoid CORS
     async function loadOdds() {
       if (USE_MOCK_DATA) {
         oddsData = { events: getMockGames() };
         return;
       }
       
-      const sport = currentSport === 'all' ? 'americanfootball_nfl' : getApiSportId(currentSport);
-      const regions = 'us';
-      const markets = 'h2h,spreads,totals';
+      // Use our backend proxy instead of direct API call (avoids CORS)
+      const sport = currentSport === 'all' ? 'vic/nfl' : `vic/${currentSport}`;
       
       try {
-        const response = await fetch(
-          `${ODDS_API_BASE}/sports/${sport}/odds?apiKey=${ODDS_API_KEY}&regions=${regions}&markets=${markets}`
-        );
+        const response = await fetch(`${VIC_TOUR_API}/api/odds/${sport}`);
         const data = await response.json();
         
-        if (data.error) {
-          console.warn('Odds API error:', data.message);
-          oddsData = { events: getMockGames() };
-        } else {
+        if (data.success) {
           oddsData = data;
+        } else {
+          console.warn('Odds API error:', data.error);
+          oddsData = { events: getMockGames() };
         }
       } catch (error) {
         console.error('Error loading odds:', error);
