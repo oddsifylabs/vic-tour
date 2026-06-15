@@ -76,6 +76,9 @@ app.use('/api', tournamentRoutes);
 app.use('/api', oddsRoutes);
 app.use('/api', championshipRoutes);
 
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Serve Dashboard
 app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, 'dashboard.html'));
