@@ -305,6 +305,16 @@ class ChampionshipService {
     return this.db.prepare(query).get(sport, targetYear);
   }
 
+  // Get championship by ID
+  getChampionshipById(id) {
+    const query = `
+      SELECT * FROM championships
+      WHERE id = ?
+    `;
+
+    return this.db.prepare(query).get(id);
+  }
+
   // Get championship brackets
   getChampionshipBrackets(championshipId) {
     const query = `

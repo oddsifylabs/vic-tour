@@ -66,10 +66,41 @@ router.get('/championships/current', (req, res) => {
 });
 
 /**
+ * GET /api/championships/:id
+ * Get championship by ID
+ */
+router.get('/championships/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const service = getService();
+
+    const championship = service.getChampionshipById(parseInt(id));
+
+    if (!championship) {
+      return res.status(404).json({
+        success: false,
+        error: `Championship not found with id: ${id}`
+      });
+    }
+
+    res.json({
+      success: true,
+      data: championship
+    });
+  } catch (error) {
+    console.error('Error fetching championship:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
  * GET /api/championships/:sport
  * Get championship for specific sport
  */
-router.get('/championships/:sport', (req, res) => {
+router.get('/championships/sport/:sport', (req, res) => {
   try {
     const { sport } = req.params;
     const { year } = req.query;
