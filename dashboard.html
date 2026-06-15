@@ -682,11 +682,14 @@
   <script>
     // Configuration - Auto-detect environment
     const VIC_TOUR_API = window.location.origin; // Use current origin (works for localhost and Railway)
-    const ODDS_API_KEY='***';
+    const ODDS_API_KEY='6f46bbb3b2fb69b5e14980a57e9909da'; // Valid: 100K credits/month
     const ODDS_API_BASE = '/api/odds'; // Use our backend proxy to avoid CORS
     
     // Use live odds data via backend proxy
     const USE_MOCK_DATA = false;
+    
+    // VIC Tour focuses on FINAL TOURNAMENTS & CHAMPIONSHIPS
+    const TOURNAMENT_MODE = true;
 
     // State
     let currentSport = 'all';

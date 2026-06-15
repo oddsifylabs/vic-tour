@@ -15,6 +15,7 @@ const fs = require('fs');
 // Import routes
 const tournamentRoutes = require('./server/routes/tournaments');
 const oddsRoutes = require('./server/routes/odds');
+const championshipRoutes = require('./server/routes/championships');
 
 // Initialize Express app
 const app = express();
@@ -73,6 +74,7 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/api', tournamentRoutes);
 app.use('/api', oddsRoutes);
+app.use('/api', championshipRoutes);
 
 // Serve Dashboard
 app.get('/dashboard', (req, res) => {
